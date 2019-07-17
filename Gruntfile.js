@@ -43,6 +43,7 @@ module.exports = function (grunt) {
     const rvmDir = grunt.option('rvmDir');
     const target = grunt.option('target');
     const shouldBuildCore = grunt.option('build-core');
+    const shouldOutputTAP = !!grunt.option('tap');
     const uuid = 'testapp';
     const args = '--inspect=9222';
     process.env.OF_VER = version;
@@ -68,9 +69,17 @@ module.exports = function (grunt) {
             }
         },
         mochaTest: {
-            default: {
+            spec: {
                 src: 'out/test/**/*.js',
                 timeout: 30000
+            },
+            tap: {
+                src: 'out/test/**/*.js',
+                timeout: 30000,
+                options: {
+                    captureFile: 'out/test-results.txt',
+                    reporter: 'tap'
+                }
             }
         },
         copy: {
@@ -249,7 +258,7 @@ module.exports = function (grunt) {
         'default',
         'start-server',
         'openfin',
-        'mochaTest',
+        shouldOutputTAP ? 'mochaTest:tap' : 'mochaTest:spec',
         'kill-processes'
     ]);
 
